@@ -1,7 +1,7 @@
 import pygame
 import sys
 from ai import moveAI  
-from utils import gameOver,gameOver, setDifficulty   
+from utils import gameOver, setDifficulty 
 pygame.init()
 
 WINDOW_WIDTH = 400
@@ -74,6 +74,12 @@ def draw_stones(screen, board, cell_size):
                     cell_size // 3
                 )
 
+def check_full(board):
+    for row in board:
+        if 0 in row:  # 0 represents an empty cell
+            return False
+    return True
+
 def get_cell_from_mouse(pos, cell_size):
     x, y = pos
     return y // cell_size, x // cell_size
@@ -100,6 +106,8 @@ def display_winner_in_external_window(winner):
         draw_text(winner_window, "You win!", FONT, winner_text_color, (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 4))
     elif winner == 2:
         draw_text(winner_window, "Game Over, AI wins!", FONT, winner_text_color, (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 4))
+    else: 
+        draw_text(winner_window, "It's a tie!, No winner", FONT, winner_text_color, (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 4))
 
     button_width = 120
     button_height = 40
@@ -160,7 +168,8 @@ def difficulty_gui():
                     return "medium"
                 elif handle_button_click(event.pos, hard_button_x, button_y, button_width, button_height):
                     return "hard"
-
+                
+           
 def main():
     grid_size = grid_size_gui()
     difficulty = difficulty_gui()
@@ -183,6 +192,9 @@ def main():
 
     need_redraw = True
 
+    alphaBetaOn = int(input("AlphaBeta: 1->ON\t0->OFF"))
+    centerHeuristicOn = int(input("Center Heuristic: 1->ON\t0->OFF"))
+    # aiFirst = int(input("AI first->1\tUser First->0"))
     while True:
         if need_redraw:
             screen.fill(BOARD_BG_COLOR)
@@ -207,13 +219,18 @@ def main():
                     winner = gameOver(board, grid_size)
                     if winner == 1:
                         game_over = True
-                    else:
 
-                        ai_move = moveAI(board, grid_size, depth=depth)
+                    elif check_full(board):
+                        winner = gameOver(board, grid_size)
+                        if winner == 0:  
+                            game_over = True
+
+                    else:
+                        ai_move = moveAI(board, grid_size, depth, alphaBetaOn, centerHeuristicOn)
                         if ai_move:
                             ai_row, ai_col = ai_move
                             board[ai_row][ai_col] = 2
-                            winner = gameOver(board, grid_size)
+                            winner = gameOver(board, grid_size)  
                             if winner == 2:
                                 game_over = True
                         current_player = 1

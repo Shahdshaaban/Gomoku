@@ -1,12 +1,11 @@
 INF = int(1e9)
 scoreMap = {
     "5-in-row": INF,
-    "4-open": 1000,
+    "4-open": 10000,
     "4-blocked": 500,
-    "3-open": 200,
+    "3-open": 400,
     "3-blocked": 50,
-    "2-open": 10,
-    "potential": 5
+    "2-open": 10
 }
 diffMap = {
     'easy': 2,
